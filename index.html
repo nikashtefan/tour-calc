@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор тура в Грузию</title>
+<style>
+  :root { --bg:#faf8f5; --card:#fff; --ink:#2b2b2b; --muted:#7a7a7a; --line:#e7e2da;
+          --accent:#b5651d; --good:#2e7d4f; --bad:#c0392b; --soft:#f3efe8; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg);
+         color:var(--ink); margin:0; padding:24px; line-height:1.45; }
+  .wrap { max-width: 1040px; margin:0 auto; }
+  h1 { font-size:24px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 20px; font-size:14px; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:20px; align-items:start; }
+  @media (max-width: 880px){ .grid { grid-template-columns: 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+          padding:18px 20px; margin-bottom:20px; }
+  .card h2 { font-size:15px; text-transform:uppercase; letter-spacing:.04em;
+             color:var(--accent); margin:0 0 14px; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:10px;
+         padding:7px 0; border-bottom:1px dashed var(--line); }
+  .row:last-child { border-bottom:none; }
+  .row label { font-size:14px; flex:1; }
+  .row .hint { color:var(--muted); font-size:12px; display:block; }
+  input[type=number]{ width:96px; padding:7px 9px; border:1px solid var(--line);
+         border-radius:8px; font-size:14px; text-align:right; background:var(--soft); }
+  input:focus{ outline:2px solid var(--accent); background:#fff; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { padding:9px 8px; text-align:right; border-bottom:1px solid var(--line); }
+  th:first-child, td:first-child { text-align:left; }
+  thead th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; }
+  .blockhead td { background:var(--soft); font-weight:700; color:var(--accent);
+         text-transform:uppercase; font-size:12px; letter-spacing:.03em; }
+  .big { font-weight:700; font-size:16px; }
+  .good { color:var(--good); }
+  .bad { color:var(--bad); }
+  .note { font-size:13px; color:var(--muted); margin-top:8px; }
+  .pill { display:inline-block; background:var(--soft); border-radius:20px;
+          padding:2px 10px; font-size:12px; color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🏔 Калькулятор тура в Грузию</h1>
+  <p class="sub">Меняй любые цифры слева — таблица справа пересчитывается сама. Дефолты проставлены по рисёрчу, после разведки перебей их на реальные. Считается для 8 / 10 / 12 платящих участников и для двух форматов питания одновременно. Вы с Настей едете <b>бесплатно</b> (заложено в себестоимость).</p>
+
+  <div class="grid">
+    <!-- ЛЕВО: вводные -->
+    <div>
+      <div class="card">
+        <h2>Параметры тура</h2>
+        <div class="row"><label>Дней в туре</label><input type="number" id="days" value="7"></div>
+        <div class="row"><label>Ночей (ночёвок)</label><input type="number" id="nights" value="6"></div>
+        <div class="row"><label>Организаторов едет бесплатно <span class="hint">вы с Настей — спят и едят в доме</span></label><input type="number" id="org" value="2"></div>
+      </div>
+
+      <div class="card">
+        <h2>Жильё и транспорт</h2>
+        <div class="row"><label>Аренда дома целиком, € / ночь <span class="hint">на 14–15 мест</span></label><input type="number" id="rent" value="400"></div>
+        <div class="row"><label>Активных дней с гидом-водителем <span class="hint">дни выездов, не все 7</span></label><input type="number" id="activeDays" value="5"></div>
+        <div class="row"><label>Гид-водитель + микроавтобус, € / день</label><input type="number" id="guide" value="160"></div>
+        <div class="row"><label>Трансферы аэропорт (всего, €)</label><input type="number" id="transfers" value="120"></div>
+      </div>
+
+      <div class="card">
+        <h2>Еда (оба формата считаются сразу)</h2>
+        <div class="row"><label>🍽 «Всё включено»: € / чел / день</label><input type="number" id="foodAll" value="15"></div>
+        <div class="row"><label>🔥 «Фестиваль» (готовим сами): € / чел / день <span class="hint">продукты, оплачивает орг</span></label><input type="number" id="foodFest" value="8"></div>
+      </div>
+
+      <div class="card">
+        <h2>Активности и прочее</h2>
+        <div class="row"><label>Активности на 1 человека, € <span class="hint">вино, баня, йога, материалы</span></label><input type="number" id="activity" value="50"></div>
+        <div class="row"><label>Входные + спец-гид (всего, €)</label><input type="number" id="buffer" value="350"></div>
+        <div class="row"><label>Запас на форс-мажор, € (всего) <span class="hint">наличкой на месте — медицина, поломки, замена, погода</span></label><input type="number" id="reserve" value="500"></div>
+      </div>
+
+      <div class="card">
+        <h2>Цена тура для участника</h2>
+        <div class="row"><label>🍽 Цена при «всё включено», € / чел</label><input type="number" id="priceAll" value="650"></div>
+        <div class="row"><label>🔥 Цена при «фестиваль», € / чел</label><input type="number" id="priceFest" value="520"></div>
+      </div>
+    </div>
+
+    <!-- ПРАВО: результаты -->
+    <div>
+      <div class="card">
+        <h2>Результат</h2>
+        <table id="results">
+          <thead>
+            <tr><th>Показатель</th><th>8 чел</th><th>10 чел</th><th>12 чел</th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <p class="note" id="legend"></p>
+      </div>
+      <div class="card">
+        <h2>Как читать</h2>
+        <p class="note">
+          <b>Себестоимость/чел</b> — сколько тур реально стоит вам на одного платящего (с учётом бесплатных мест организаторов).<br>
+          <b>↳ из них на вас с Настей</b> — сколько в этой себестоимости приходится на вашу с Настей еду + активности (жильё и транспорт от вас не зависят, поэтому не считаются).<br>
+          <b>Запас на форс-мажор</b> — фиксированная сумма наличкой на месте: медицина, поломка машины, замена жилья, погодные сюрпризы. Одинаково для всех сценариев.<br>
+          <b>Бюджет</b> — то, что реально надо иметь на руках до тура (себестоимость + запас).<br>
+          <b>Маржа после запаса</b> — ваш с Настей заработок, если запас НЕ потратили (если потратили — маржа меньше на сумму трат).<br>
+          <b>% маржи</b> — доля от выручки. Твоя цель была «хотя бы 10%».<br>
+          <b>Безубыточность</b> — минимальная цена тура, ниже которой уходите в минус при этом числе людей (с учётом запаса). <span class="pill">красным = убыток</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ids = ["days","nights","org","rent","activeDays","guide","transfers",
+             "foodAll","foodFest","activity","buffer","reserve","priceAll","priceFest"];
+function v(id){ const x = parseFloat(document.getElementById(id).value); return isNaN(x)?0:x; }
+function eur(n){ return Math.round(n).toLocaleString("ru-RU").replace(/,/g," ") + " €"; }
+
+// расходы для N платящих при заданной ставке еды
+function cost(N, foodRate){
+  const days=v("days"), nights=v("nights"), org=v("org");
+  const occ = N + org;
+  const housing   = v("rent") * nights;
+  const transport = v("activeDays")*v("guide") + v("transfers");
+  const food      = foodRate * occ * days;
+  const activities= v("activity") * occ;
+  const buffer    = v("buffer");
+  return housing + transport + food + activities + buffer;
+}
+
+function calc(){
+  const org = v("org") || 1;
+  const payers = [8,10,12];
+  const formats = [
+    {key:"🍽 ВСЁ ВКЛЮЧЕНО", food:v("foodAll"), price:v("priceAll")},
+    {key:"🔥 ФЕСТИВАЛЬ (готовим сами)", food:v("foodFest"), price:v("priceFest")},
+  ];
+  let html = "";
+  formats.forEach(f => {
+    html += `<tr class="blockhead"><td colspan="4">${f.key} — цена ${eur(f.price)}/чел</td></tr>`;
+    const rows = {
+      "Себестоимость / чел": [],
+      "↳ из них на вас с Настей / чел": [],
+      "Запас на форс-мажор (всего)": [],
+      "Бюджет = себестоимость + запас": [],
+      "Маржа после запаса (вам с Настей)": [],
+      "% маржи": [], "Каждой": [], "Безубыточность (мин. цена)": []
+    };
+    const reserve = v("reserve");
+    payers.forEach(N => {
+      const c = cost(N, f.food);
+      const perPax = c / N;
+      const orgExtra = (f.food * v("days") + v("activity")) * org;
+      const orgPerPax = orgExtra / N;
+      const budget = c + reserve;
+      const revenue = f.price * N;
+      const margin = revenue - budget;
+      const pct = revenue>0 ? (margin/revenue*100) : 0;
+      const breakeven = budget / N;
+      rows["Себестоимость / чел"].push(eur(perPax));
+      rows["↳ из них на вас с Настей / чел"].push(`<span style="color:var(--accent)">${eur(orgPerPax)}</span>`);
+      rows["Запас на форс-мажор (всего)"].push(`<span style="color:var(--accent)">${eur(reserve)}</span>`);
+      rows["Бюджет = себестоимость + запас"].push(eur(budget));
+      const cls = margin>=0 ? "good" : "bad";
+      rows["Маржа после запаса (вам с Настей)"].push(`<span class="${cls} big">${eur(margin)}</span>`);
+      rows["% маржи"].push(`<span class="${cls}">${Math.round(pct)}%</span>`);
+      rows["Каждой"].push(eur(margin/org));
+      rows["Безубыточность (мин. цена)"].push(eur(breakeven));
+    });
+    for (const [name, vals] of Object.entries(rows)){
+      html += `<tr><td>${name}</td><td>${vals[0]}</td><td>${vals[1]}</td><td>${vals[2]}</td></tr>`;
+    }
+  });
+  document.getElementById("tbody").innerHTML = html;
+  document.getElementById("legend").textContent =
+    "Зелёное — прибыль, красное — убыток. «Безубыточность» = себестоимости/чел: ставь цену тура выше неё.";
+}
+
+ids.forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>
