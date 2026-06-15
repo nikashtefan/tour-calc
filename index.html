@@ -44,7 +44,7 @@
 <body>
 <div class="wrap">
   <h1>🏔 Калькулятор тура в Грузию</h1>
-  <p class="sub">Меняй любые цифры слева — таблица справа пересчитывается сама. Дефолты проставлены по рисёрчу, после разведки перебей их на реальные. Считается для 12 / 14 / 16 платящих участников и для двух форматов питания одновременно. Трое организаторов едут <b>бесплатно</b> (заложено в себестоимость).</p>
+  <p class="sub">Меняй любые цифры слева — таблица справа пересчитывается сама. Дефолты проставлены по рисёрчу, после разведки перебей их на реальные. Считается для 10 / 12 / 14 / 16 платящих участников. Трое организаторов едут <b>бесплатно</b> (заложено в себестоимость).</p>
 
   <div class="grid">
     <!-- ЛЕВО: вводные -->
@@ -65,9 +65,8 @@
       </div>
 
       <div class="card">
-        <h2>Еда (оба формата считаются сразу)</h2>
+        <h2>Еда</h2>
         <div class="row"><label>🍽 «Всё включено»: € / чел / день</label><input type="number" id="foodAll" value="15"></div>
-        <div class="row"><label>🔥 «Фестиваль» (готовим сами): € / чел / день <span class="hint">продукты, оплачивает орг</span></label><input type="number" id="foodFest" value="8"></div>
       </div>
 
       <div class="card">
@@ -79,8 +78,7 @@
 
       <div class="card">
         <h2>Цена тура для участника</h2>
-        <div class="row"><label>🍽 Цена при «всё включено», € / чел</label><input type="number" id="priceAll" value="650"></div>
-        <div class="row"><label>🔥 Цена при «фестиваль», € / чел</label><input type="number" id="priceFest" value="520"></div>
+        <div class="row"><label>🍽 Цена тура, € / чел</label><input type="number" id="priceAll" value="650"></div>
       </div>
     </div>
 
@@ -90,7 +88,7 @@
         <h2>Результат</h2>
         <table id="results">
           <thead>
-            <tr><th>Показатель</th><th>12 чел</th><th>14 чел</th><th>16 чел</th></tr>
+            <tr><th>Показатель</th><th>10 чел</th><th>12 чел</th><th>14 чел</th><th>16 чел</th></tr>
           </thead>
           <tbody id="tbody"></tbody>
         </table>
@@ -114,7 +112,7 @@
 
 <script>
 const ids = ["days","nights","org","rent","activeDays","guide","transfers",
-             "foodAll","foodFest","activity","buffer","reserve","priceAll","priceFest"];
+             "foodAll","activity","buffer","reserve","priceAll"];
 function v(id){ const x = parseFloat(document.getElementById(id).value); return isNaN(x)?0:x; }
 function eur(n){ return Math.round(n).toLocaleString("ru-RU").replace(/,/g," ") + " €"; }
 
@@ -132,14 +130,13 @@ function cost(N, foodRate){
 
 function calc(){
   const org = v("org") || 1;
-  const payers = [12,14,16];
+  const payers = [10,12,14,16];
   const formats = [
     {key:"🍽 ВСЁ ВКЛЮЧЕНО", food:v("foodAll"), price:v("priceAll")},
-    {key:"🔥 ФЕСТИВАЛЬ (готовим сами)", food:v("foodFest"), price:v("priceFest")},
   ];
   let html = "";
   formats.forEach(f => {
-    html += `<tr class="blockhead"><td colspan="4">${f.key} — цена ${eur(f.price)}/чел</td></tr>`;
+    html += `<tr class="blockhead"><td colspan="${payers.length+1}">${f.key} — цена ${eur(f.price)}/чел</td></tr>`;
     const rows = {
       "Себестоимость / чел": [],
       "↳ из них на организаторов / чел": [],
@@ -170,7 +167,7 @@ function calc(){
       rows["Безубыточность (мин. цена)"].push(eur(breakeven));
     });
     for (const [name, vals] of Object.entries(rows)){
-      html += `<tr><td>${name}</td><td>${vals[0]}</td><td>${vals[1]}</td><td>${vals[2]}</td></tr>`;
+      html += `<tr><td>${name}</td><td>${vals.join("</td><td>")}</td></tr>`;
     }
   });
   document.getElementById("tbody").innerHTML = html;
